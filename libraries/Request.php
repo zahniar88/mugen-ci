@@ -20,6 +20,22 @@ class Request
     }
 
     /**
+     * validasi
+     *
+     * @param array $validate
+     * @return void
+     */
+    public function validate($validate)
+    {
+        require_once __DIR__ . "/Validator.php";
+        $validator = new Validator;
+
+        $validator->validate($this, $validate);
+
+        return $validator->errors;
+    }
+
+    /**
      * set property of key value request
      * @param string $key
      * @param array|string $val
