@@ -20,6 +20,7 @@ class Mugen extends Compiler
      */
     public function view(string $path, array $params = [])
     {
+        $path = str_replace(".", "/", $path);
         $_viewFile = VIEWPATH . "/" . $path . ".blade.php";
         
         /**
@@ -50,12 +51,13 @@ class Mugen extends Compiler
                 // parse view
                 $content = $this->render($content);
 
-                $file = fopen($compiled, "w+");
-                fwrite($file, $content);
-                fclose($file);
+                // $file = fopen($compiled, "w+");
+                // fwrite($file, $content);
+                // fclose($file);
+                echo $content;
             }
             
-            require_once $compiled;
+            // require_once $compiled;
         } else {
             show_error("Unable to load the requested file: " . $_viewFile, 404, "404 - File Not Found");
         }
