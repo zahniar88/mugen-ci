@@ -55,7 +55,7 @@ class Mugen extends Compiler
                 fclose($file);
             }
 
-            elseif ( $this->lastModified($_viewFile) >= $this->lastModified($compiled) ) {
+            if ( $this->lastModified($_viewFile) >= $this->lastModified($compiled) ) {
                 $file = fopen($compiled, "w+");
                 fwrite($file, $content);
                 fclose($file);
