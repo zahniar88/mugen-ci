@@ -45,17 +45,11 @@ class Mugen extends Compiler
             // load content
             $content = file_get_contents($_viewFile);
 
-            // parse view
-            $content = $this->render($content);
-
             $compiled = $this->getCompiledPath($path);
-            if ( !file_exists($compiled) ) {
-                $file = fopen($compiled, "w+");
-                fwrite($file, $content);
-                fclose($file);
-            }
+            if ( !file_exists($compiled) || ($this->lastModified($_viewFile) >= $this->lastModified($compiled)) ) {
+                // parse view
+                $content = $this->render($content);
 
-            if ( $this->lastModified($_viewFile) >= $this->lastModified($compiled) ) {
                 $file = fopen($compiled, "w+");
                 fwrite($file, $content);
                 fclose($file);
