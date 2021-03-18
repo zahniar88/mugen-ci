@@ -51,13 +51,12 @@ class Mugen extends Compiler
                 // parse view
                 $content = $this->render($content);
 
-                // $file = fopen($compiled, "w+");
-                // fwrite($file, $content);
-                // fclose($file);
-                echo $content;
+                $file = fopen($compiled, "w+");
+                fwrite($file, $content);
+                fclose($file);
             }
             
-            // require_once $compiled;
+            require_once $compiled;
         } else {
             show_error("Unable to load the requested file: " . $_viewFile, 404, "404 - File Not Found");
         }
