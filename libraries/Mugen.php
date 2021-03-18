@@ -41,12 +41,12 @@ class Mugen extends Compiler
                     $this->$_ci_key = &$_ci_CI->$_ci_key;
                 }
             }
-
-            // load content
-            $content = file_get_contents($_viewFile);
-
+            
             $compiled = $this->getCompiledPath($path);
             if ( !file_exists($compiled) || ($this->lastModified($_viewFile) >= $this->lastModified($compiled)) ) {
+                // load content
+                $content = file_get_contents($_viewFile);
+
                 // parse view
                 $content = $this->render($content);
 
