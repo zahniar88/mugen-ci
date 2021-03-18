@@ -115,7 +115,7 @@ trait MugenCompiler
      */
     protected function CommentCompiler($content)
     {
-        $pattern = sprintf("/%s\s*(.*?)\s*%s/s", "<!--", "-->");
+        $pattern = sprintf("/%s\s*(.*?)\s*%s/s", "{{--", "--}}");
         $callback = function($matches) {
             return "";
         };
