@@ -20,7 +20,7 @@ class Mugen extends Compiler
      */
     public function view(string $path, array $params = [])
     {
-        $_viewFile = VIEWPATH . "/" . $path . ".ts.php";
+        $_viewFile = VIEWPATH . "/" . $path . ".blade.php";
         
         /**
          * load key of array as a variable
