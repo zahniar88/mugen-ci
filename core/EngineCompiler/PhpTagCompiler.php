@@ -12,7 +12,7 @@ trait PhpTagCompiler
      */
     protected function phpTag($content)
     {
-        $pattern = sprintf("/%s\s*(.*?)\s*%s/s", "{%", "%}");
+        $pattern = sprintf("/%s\s*(.*?)\s*%s/s", "@php", "@endphp");
         $callback = function ($matches) {
             return "<?php $matches[1] ?>";
         };
