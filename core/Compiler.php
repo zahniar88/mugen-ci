@@ -33,7 +33,7 @@ class Compiler
      */
     protected function getCachePath()
     {
-        $cacheDir = APPPATH . "/tmp/views";
+        $cacheDir = APPPATH . "/cache/views";
         if ( !is_dir($cacheDir) ) {
             mkdir($cacheDir);
         }

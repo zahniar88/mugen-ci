@@ -131,7 +131,7 @@ trait MugenCompiler
      */
     protected function functionViewCompiler($content)
     {
-        $pattern = "/@(@?view)(\s*)(\( ( (?>[^()]+) | (?3) )* \))?/x";
+        $pattern = "/@(@?include)(\s*)(\( ( (?>[^()]+) | (?3) )* \))?/x";
         $callback = function($matches) {
             return "<?php \$this->view$matches[3]; ?>";
         };
