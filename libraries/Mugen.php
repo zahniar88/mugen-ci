@@ -4,8 +4,9 @@ defined("BASEPATH") OR die("No direct access allowed");
 require_once __DIR__ . "/../core/EngineCompiler/EchoCompiler.php";
 require_once __DIR__ . "/../core/EngineCompiler/PhpTagCompiler.php";
 require_once __DIR__ . "/../core/EngineCompiler/MugenCompiler.php";
+require_once __DIR__ . "/../core/Compiler.php";
 
-class Mugen
+class Mugen extends Compiler
 {
 
     use EchoCompiler, PhpTagCompiler, MugenCompiler;
@@ -17,9 +18,9 @@ class Mugen
      * @param array $params
      * @return void
      */
-    public function view(string $view, array $params = [])
+    public function view(string $path, array $params = [])
     {
-        $_viewFile = VIEWPATH . "/" . $view . ".ts.php";
+        $_viewFile = VIEWPATH . "/" . $path . ".ts.php";
         
         /**
          * load key of array as a variable
@@ -47,7 +48,20 @@ class Mugen
             // parse view
             $content = $this->render($content);
 
-            echo eval("?>" . $content . "<?php");
+            $compiled = $this->getCompiledPath($path);
+            if ( !file_exists($compiled) ) {
+                $file = fopen($compiled, "w+");
+                fwrite($file, $content);
+                fclose($file);
+            }
+
+            elseif ( $this->lastModified($_viewFile) >= $this->lastModified($compiled) ) {
+                $file = fopen($compiled, "w+");
+                fwrite($file, $content);
+                fclose($file);
+            }
+            
+            require_once $compiled;
         } else {
             show_error("Unable to load the requested file: " . $_viewFile, 404, "404 - File Not Found");
         }
