@@ -58,7 +58,7 @@ class Validator
                     $__getKeyName = array_keys($__req["__tmp_files"]["name"])[$i];
                     $this->value = $request->{$indexKey . "_" . $__getKeyName};
                     $this->index = $indexKey . "_" . $__getKeyName;
-                    $this->alias = ucfirst($indexKey) . " " . $__getKeyName;
+                    $this->alias = ucfirst(str_replace("_", " ", $indexKey)) . " " . $__getKeyName;
 
                     $this->runValidation($rules);
                 }
@@ -66,7 +66,7 @@ class Validator
             elseif ( $__is_files && !preg_match("/[^a-zA-Z0-9]+$/", $index) && !is_array($__req["__tmp_files"]["name"]) ) {
                 $this->value = $__req;
                 $this->index = $indexKey;
-                $this->alias = ucfirst($indexKey);
+                $this->alias = ucfirst(str_replace("_", " ", $indexKey));
 
                 $this->runValidation($rules);
             }
@@ -77,7 +77,7 @@ class Validator
                     $__getKeyName = array_keys($__req)[$i];
                     $this->value = $request->{$indexKey . "_" . $__getKeyName};
                     $this->index = $indexKey . "_" . $__getKeyName;
-                    $this->alias = ucfirst($indexKey) . " " . $__getKeyName;
+                    $this->alias = ucfirst(str_replace("_", " ", $indexKey)) . " " . $__getKeyName;
 
                     $this->runValidation($rules);
                 }
@@ -85,14 +85,14 @@ class Validator
             elseif ( !$__is_files && preg_match("/[^a-zA-Z0-9]+$/", $index) && is_array($__req) ) {
                 $this->value = $request->{$indexKey};
                 $this->index = $indexKey;
-                $this->alias = ucfirst($indexKey);
+                $this->alias = ucfirst(str_replace("_", " ", $indexKey));
 
                 $this->runValidation($rules);
             }
             elseif ( !$__is_files && !is_array($__req) ) {
                 $this->value = $request->{$indexKey};
                 $this->index = $indexKey;
-                $this->alias = ucfirst($indexKey);
+                $this->alias = ucfirst(str_replace("_", " ", $indexKey));
 
                 $this->runValidation($rules);
             }
@@ -507,9 +507,9 @@ class Validator
             array_push($errors, "angka");
         }
         
-        if ( !preg_match("/[^a-zA-Z0-9]+/", $this->value) ) {
-            array_push($errors, "simbol");
-        }
+        // if ( !preg_match("/[^a-zA-Z0-9]+/", $this->value) ) {
+        //     array_push($errors, "simbol");
+        // }
 
         if (count($errors) > 0) {
             $this->setError("Isian :attribute setidaknya mengandung " . implode(", ", $errors) . ".");
