@@ -2,10 +2,11 @@
 defined("BASEPATH") OR die("No direct access allowed");
 
 require_once __DIR__ . "/../core/Database/InsertQuery.php";
+require_once __DIR__ . "/../core/Database/SelectQuery.php";
 
 class Entity extends CI_Model {
 
-    use InsertQuery;
+    use InsertQuery, SelectQuery;
 
     /**
      * define default table name
@@ -17,13 +18,7 @@ class Entity extends CI_Model {
      * define default cols name
      * @var array
      */
-    protected $cols = [];
-
-    /**
-     * define default hidden columns 
-     * @var array
-     */
-    protected $hidden = [];
+    protected $cols = ["*"];
 
     /**
      * define column can insert or update
@@ -36,6 +31,16 @@ class Entity extends CI_Model {
      * @var true
      */
     protected $timestamps = true;
+
+    /**
+     * for generating query
+     * @var string
+     */
+    protected $selectRaw = "",
+                $where = "",
+                $orderBy = "",
+                $groupBy = "",
+                $limit = "";
 
     /**
      * get default time
