@@ -3,10 +3,11 @@ defined("BASEPATH") OR die("No direct access allowed");
 
 require_once __DIR__ . "/../core/Database/InsertQuery.php";
 require_once __DIR__ . "/../core/Database/SelectQuery.php";
+require_once __DIR__ . "/../core/Database/JoinQuery.php";
 
 class Entity extends CI_Model {
 
-    use InsertQuery, SelectQuery;
+    use InsertQuery, SelectQuery, JoinQuery;
 
     /**
      * define default table name

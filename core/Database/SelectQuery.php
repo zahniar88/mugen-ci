@@ -108,8 +108,8 @@ trait SelectQuery
     }
 
     /**
-     * generate query result
-     * @return void 
+     * get query
+     * @return mixed 
      */
     public function get()
     {
@@ -123,11 +123,31 @@ trait SelectQuery
             $this->limit
         ";
 
-        // $prepare = $this->db->query($query);
-        // $res = $prepare->result_array();
+        $prepare = $this->db->query($query);
+        $res = $prepare->result_array();
 
-        // return $this->response($res);
-        return $query;
+        return $this->response($res);
+    }
+
+    /**
+     * get count
+     * @param mixed|null $col 
+     * @return mixed 
+     */
+    public function count($col = null)
+    {
+        $col = $col ?? "*";
+        $query = "
+            SELECT 
+                COUNT($col) AS count
+            FROM $this->table
+            $this->where
+        ";
+
+        $prepare = $this->db->query($query);
+        $res = $prepare->row();
+
+        return $res->count;
     }
 
     /**
@@ -147,12 +167,15 @@ trait SelectQuery
      */
     protected function response($results)
     {
-        $results = $this->has_hidden($results);
-        $results = $this->valueToObject($results);
+        if ( $results ) {
+            $results = $this->has_hidden($results);
+            $results = $this->valueToObject($results);
+            $results = $this->has_joins($results);
 
-        // if result is single data
-        if ( property_exists($this, "single") && $this->single ) {
-            return $results[0];
+            // if result is single data
+            if ( property_exists($this, "single") && $this->single ) {
+                return $results[0];
+            }
         }
 
         return $results;
@@ -195,6 +218,30 @@ trait SelectQuery
                 $res = array_filter((array) $res, function($val, $key) use ($hidden) {
                     return !in_array($key, $hidden);
                 }, ARRAY_FILTER_USE_BOTH);
+            }
+        }
+
+        return $results;
+    }
+
+    /**
+     * check have join
+     * @param mixed $results 
+     * @return mixed 
+     */
+    protected function has_joins($results)
+    {
+        if ( count($this->joins) > 0 ) {
+            foreach ($this->joins as $key => $value) {
+                $table   = $value["table"];
+                $primary = $value["primary"];
+                $foreign = $value["foreign"];
+                $method  = $value["method"];
+                $data    = $value["data"];
+
+                foreach ($results as $res) {
+                    $res->{$table} = $data[$table. "_" . $res->{$primary}] ?? null;
+                }
             }
         }
 
