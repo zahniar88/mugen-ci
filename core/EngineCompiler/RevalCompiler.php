@@ -1,7 +1,7 @@
 <?php
 defined("BASEPATH") OR die("No Direct Access Allowed");
 
-trait MugenCompiler
+trait RevalCompiler
 {
 
     protected $explicitOpenTag = [

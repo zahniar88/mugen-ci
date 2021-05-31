@@ -3,13 +3,13 @@ defined("BASEPATH") OR die("No direct access allowed");
 
 require_once __DIR__ . "/../core/EngineCompiler/EchoCompiler.php";
 require_once __DIR__ . "/../core/EngineCompiler/PhpTagCompiler.php";
-require_once __DIR__ . "/../core/EngineCompiler/MugenCompiler.php";
+require_once __DIR__ . "/../core/EngineCompiler/RevalCompiler.php";
 require_once __DIR__ . "/../core/Compiler.php";
 
-class Mugen extends Compiler
+class Reval extends Compiler
 {
 
-    use EchoCompiler, PhpTagCompiler, MugenCompiler;
+    use EchoCompiler, PhpTagCompiler, RevalCompiler;
 
     /**
      * get the view object
@@ -63,10 +63,10 @@ class Mugen extends Compiler
     }
 
     /**
-     * render function
-     *
-     * @param string $content
-     * @return void
+     * rendering view
+     * 
+     * @param mixed $content 
+     * @return mixed 
      */
     protected function render($content)
     {
