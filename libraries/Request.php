@@ -155,4 +155,13 @@ class Request
         return $uploadedFile;
     }
 
+    /**
+     * return request into array
+     * @return array 
+     */
+    public function toArray()
+    {
+        return (array) $this;
+    }
+
 }
