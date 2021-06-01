@@ -6,6 +6,7 @@ require_once __DIR__ . "/../core/Database/SelectQuery.php";
 require_once __DIR__ . "/../core/Database/MergeWithQuery.php";
 require_once __DIR__ . "/../core/Database/JoinQuery.php";
 require_once __DIR__ . "/../core/Database/UpdateQuery.php";
+require_once __DIR__ . "/../core/Database/DeleteQuery.php";
 
 class Entity extends CI_Model {
 
@@ -13,7 +14,8 @@ class Entity extends CI_Model {
         SelectQuery, 
         MergeWithQuery, 
         JoinQuery, 
-        UpdateQuery;
+        UpdateQuery,
+        DeleteQuery;
 
     /**
      * define default table name
