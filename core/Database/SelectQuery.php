@@ -117,6 +117,7 @@ trait SelectQuery
             SELECT 
                 " . implode(", ", $this->cols) . "
             FROM $this->table
+            $this->join
             $this->where
             $this->orderBy
             $this->groupBy
