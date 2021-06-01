@@ -4,12 +4,11 @@ defined("BASEPATH") OR die("No direct access allowed");
 trait InsertQuery {
 
     /**
-     * default query create / insert data
-     * 
-     * @param mixed $params 
-     * @return mixed 
+     * default create
+     * @param array $params 
+     * @return array|false 
      */
-    public function create($params)
+    public function create($params = [])
     {
         $cols = [];
 
@@ -34,6 +33,40 @@ trait InsertQuery {
         $prepare = $this->db->query($query);
         
         return $prepare ? $params : false;
+    }
+
+    /**
+     * create many
+     * @param array $params 
+     * @return array|false 
+     */
+    public function createMany($params = [])
+    {
+        $values = [];
+        foreach ($params as &$param) {
+            // if have timestamp
+            if ($this->timestamps) {
+                $param["created_at"] = $this->current_time();
+            }
+
+            $param = array_map(function ($val) {
+                return "'" . $val . "'";
+            }, $param);
+            $values[] = "(" . implode(", ", array_values($param)) . ")";
+        }
+
+        $cols = array_keys($params[0]);
+
+        $query = "
+            INSERT INTO $this->table 
+                (" . implode(", ", $cols) . ")
+            VALUES"
+            . implode(", \n", $values);
+
+        $prepare = $this->db->query($query);
+
+        return $prepare ? $params : false;
+
     }
 
 }
