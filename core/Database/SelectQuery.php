@@ -170,7 +170,7 @@ trait SelectQuery
         if ( $results ) {
             $results = $this->has_hidden($results);
             $results = $this->valueToObject($results);
-            $results = $this->has_joins($results);
+            $results = $this->has_merge($results);
 
             // if result is single data
             if ( property_exists($this, "single") && $this->single ) {
@@ -229,10 +229,10 @@ trait SelectQuery
      * @param mixed $results 
      * @return mixed 
      */
-    protected function has_joins($results)
+    protected function has_merge($results)
     {
-        if ( count($this->joins) > 0 ) {
-            foreach ($this->joins as $key => $value) {
+        if ( count($this->merges) > 0 ) {
+            foreach ($this->merges as $key => $value) {
                 $table   = $value["table"];
                 $primary = $value["primary"];
                 $foreign = $value["foreign"];

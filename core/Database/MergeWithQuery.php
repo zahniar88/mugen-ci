@@ -4,14 +4,14 @@ defined("BASEPATH") OR die("No direct access allowed");
 /**
  * 
  */
-trait JoinQuery
+trait MergeWithQuery
 {
 
     /**
      * save object join
      * @var array
      */
-    protected $joins = [];
+    protected $merges = [];
     
     /**
      * define join table
@@ -22,7 +22,7 @@ trait JoinQuery
     public function with($tables = [])
     {
         foreach ($tables as $key) {
-            $this->joins[$key] = $this->{$key}();
+            $this->merges[$key] = $this->{$key}();
         }
 
         return $this;
