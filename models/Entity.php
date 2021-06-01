@@ -5,10 +5,15 @@ require_once __DIR__ . "/../core/Database/InsertQuery.php";
 require_once __DIR__ . "/../core/Database/SelectQuery.php";
 require_once __DIR__ . "/../core/Database/MergeWithQuery.php";
 require_once __DIR__ . "/../core/Database/JoinQuery.php";
+require_once __DIR__ . "/../core/Database/UpdateQuery.php";
 
 class Entity extends CI_Model {
 
-    use InsertQuery, SelectQuery, MergeWithQuery, JoinQuery;
+    use InsertQuery, 
+        SelectQuery, 
+        MergeWithQuery, 
+        JoinQuery, 
+        UpdateQuery;
 
     /**
      * define default table name
