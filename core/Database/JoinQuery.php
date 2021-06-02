@@ -6,6 +6,9 @@ defined("BASEPATH") OR die("No direct access allowed");
  */
 trait JoinQuery
 {
+
+    protected $childJoinCols = [];
+    protected $parentJoinCols = [];
     
     /**
      * joining table
@@ -19,18 +22,32 @@ trait JoinQuery
     {
         $foreign_key = isset($foreign_key) ? $foreign_key : $this->table . "_" . $primary_key;
 
-        // modify columns table
-        $table_parent = $this->table;
-        $parent_cols = array_map(function($cols) use ($table_parent) {
-            return "$table_parent.$cols";
-        }, $this->cols);
-
-        // merge
-        $this->cols = array_merge($this->cols, $parent_cols, $this->getColumns($table));
-
-        $this->join .= "$mode JOIN $table ON $this->table.$primary_key = $table.$foreign_key";
+        $this->childJoinCols = array_merge($this->childJoinCols, $this->getChildColumns($table));
+        $this->join .= "$mode JOIN $table ON $this->table.$primary_key = $table.$foreign_key\n";
 
         return $this;
+    }
+
+    /**
+     * get columns parent
+     * @return array 
+     */
+    public function getParentColumns()
+    {
+        $table = $this->table;
+        $query = "SHOW COLUMNS FROM $table";
+        $prepare = $this->db->query($query);
+
+        $hidden = $this->hidden;
+        $columns = array_filter(array_column($prepare->result_array(), "Field"), function($key) use ($hidden) {
+            return !in_array($key, $hidden);
+        }, ARRAY_FILTER_USE_BOTH);
+
+        $columns = array_map(function ($cols) use ($table) {
+            return "$table.$cols";
+        }, $columns);
+
+        return $columns;
     }
 
     /**
@@ -38,7 +55,7 @@ trait JoinQuery
      * @param mixed $table 
      * @return array 
      */
-    protected function getColumns($table)
+    protected function getChildColumns($table)
     {
         $query = "SHOW COLUMNS FROM $table";
         $prepare = $this->db->query($query);

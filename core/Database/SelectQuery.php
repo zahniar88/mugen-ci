@@ -113,6 +113,10 @@ trait SelectQuery
      */
     public function get()
     {
+        if ( count($this->childJoinCols) > 0 ) {
+            $this->cols = array_merge($this->getParentColumns(), $this->childJoinCols);
+        }
+
         $query = "
             SELECT 
                 " . implode(", ", $this->cols) . "
