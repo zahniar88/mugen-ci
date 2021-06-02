@@ -12,18 +12,22 @@ trait JoinQuery
     
     /**
      * joining table
-     * @param mixed $table 
+     * @param mixed $destinations 
      * @param string $primary_key 
      * @param mixed|null $foreign_key 
      * @param string $mode 
      * @return $this 
      */
-    public function join($table, $primary_key = "id", $foreign_key = null, $mode = "")
+    public function join($destinations, $primary_key = "id", $foreign_key = null, $mode = "")
     {
+        $extract = explode(":", $destinations);
+        $table = $extract[0];
+        $alias = $extract[1] ?? $table;
+
         $foreign_key = isset($foreign_key) ? $foreign_key : $this->table . "_" . $primary_key;
 
-        $this->childJoinCols = array_merge($this->childJoinCols, $this->getChildColumns($table));
-        $this->join .= "$mode JOIN $table ON $this->table.$primary_key = $table.$foreign_key\n";
+        $this->childJoinCols = array_merge($this->childJoinCols, $this->getChildColumns($table, $foreign_key, $alias));
+        $this->join .= "$mode JOIN $table " . ($alias != $table ? $alias : "") . " ON $this->table.$primary_key = $alias.$foreign_key\n";
 
         return $this;
     }
@@ -55,14 +59,18 @@ trait JoinQuery
      * @param mixed $table 
      * @return array 
      */
-    protected function getChildColumns($table)
+    protected function getChildColumns($table, $foreign_key, $alias)
     {
         $query = "SHOW COLUMNS FROM $table";
         $prepare = $this->db->query($query);
 
-        $columns = array_map(function ($cols) use ($table) {
-            return "$table.$cols as $table" . "_" . "$cols";
-        }, array_column($prepare->result_array(), "Field"));
+        $columns = array_filter(array_column($prepare->result_array(), "Field"), function($key) use ($foreign_key) {
+            return $key != $foreign_key;
+        }, ARRAY_FILTER_USE_BOTH);
+
+        $columns = array_map(function ($cols) use ($alias) {
+            return "$alias.$cols AS $alias" . "_" . "$cols";
+        }, $columns);
 
         return $columns;
     }
