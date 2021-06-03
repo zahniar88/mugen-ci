@@ -1,20 +1,17 @@
 <?php
 defined("BASEPATH") OR die("No direct access allowed");
 
+require_once __DIR__ . "/../core/Database/SelectQueryBuilder.php";
 
 class Entity extends CI_Model {    
+
+    use SelectQueryBuilder;
 
     /**
      * define default table name
      * @var string
      */
     protected $table = "";
-
-    /**
-     * define default cols name
-     * @var array
-     */
-    protected $cols = ["*"];
 
     /**
      * define column can insert or update
@@ -27,17 +24,6 @@ class Entity extends CI_Model {
      * @var true
      */
     protected $timestamps = true;
-
-    /**
-     * for generating query
-     * @var string
-     */
-    protected $selectRaw = "",
-                $where = "",
-                $join = "",
-                $orderBy = "",
-                $groupBy = "",
-                $limit = "";
 
     /**
      * get default time
