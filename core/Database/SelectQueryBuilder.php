@@ -204,6 +204,7 @@ trait SelectQueryBuilder
             return (object) $val;
         }, $results);
 
+        // if have with
         if ( $this->with ) {
             foreach ($this->with as $key => $value) {
                 foreach ($results as &$result) {
