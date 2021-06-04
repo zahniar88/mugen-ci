@@ -151,12 +151,13 @@ trait SelectQueryBuilder
         $query = "
             SELECT
                 COUNT(*) AS count
-            FROM $this->table
-            $this->join
+            FROM $this->table" . ($this->alias ? " AS " . $this->alias : "") . "
+            " . str_replace("#current_table#", ($this->alias ? $this->alias : $this->table), $this->join) . "
             $this->where
             $this->orderBy
             $this->groupBy
         ";
+
         $prepare = $this->db->query($query);
         $res = $prepare->row();
 
