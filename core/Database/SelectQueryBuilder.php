@@ -2,13 +2,14 @@
 defined("BASEPATH") OR die("No direct access allowed");
 
 require_once  __DIR__ . "/JoinQueryBuilder.php";
+require_once  __DIR__ . "/WithQueryBuilder.php";
 
 /**
  * 
  */
 trait SelectQueryBuilder
 {
-    use JoinQueryBuilder;
+    use JoinQueryBuilder, WithQueryBuilder;
  
     /**
      * saving query
@@ -180,6 +181,15 @@ trait SelectQueryBuilder
         $results = array_map(function($val) {
             return (object) $val;
         }, $results);
+
+        if ( $this->with ) {
+            foreach ($this->with as $key => $value) {
+                foreach ($results as &$result) {
+                    $key = $value["table"] . "_" . $result->{$value["primary"]};
+                    $result->{$value["table"]} = $value["data"][$key] ?? null;
+                }
+            }
+        }
 
         return $this->single ? $results[0] : $results;
     }
