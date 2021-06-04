@@ -26,12 +26,44 @@ class Entity extends CI_Model {
     protected $timestamps = true;
 
     /**
+     * save where query fro global
+     * @var string
+     */
+    protected $where = "";
+
+    /**
      * get default time
      * @return string 
      */
     public function current_time()
     {
         return date("Y-m-d H:i:s");
+    }
+
+    /**
+     * make query where
+     * @param array|string $where 
+     * @param string $operator 
+     * @param string $separator 
+     * @return $this 
+     */
+    public function where($where, $operator = "=", $separator = "AND")
+    {
+        $query = " WHERE ";
+        if ( is_array($where) ) {
+            $expr = [];
+            foreach ($where as $key => $value) {
+                $expr[] = "$key $operator $value";
+            }
+            $query .= implode($separator, $expr);
+        }
+        else {
+            $query .= $where;
+        }
+
+        $this->where = $query;
+
+        return $this;
     }
 
 }

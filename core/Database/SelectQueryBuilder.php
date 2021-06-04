@@ -1,7 +1,7 @@
 <?php
 defined("BASEPATH") OR die("No direct access allowed");
 
-require_once __DIR__ . "/JoinQueryBuilder.php";
+require_once  __DIR__ . "/JoinQueryBuilder.php";
 
 /**
  * 
@@ -9,144 +9,130 @@ require_once __DIR__ . "/JoinQueryBuilder.php";
 trait SelectQueryBuilder
 {
     use JoinQueryBuilder;
-
+ 
     /**
      * saving query
-     * @var string[]
+     * @var array
      */
-    protected $select         = ["*"],
-              $selectRaw      = [],
-              $relationSelect = [],
-              $join           = "",
-              $where          = "",
-              $orderBy        = "",
-              $groupBy        = "",
-              $limit          = "",
-              $single         = false;
+    protected $columns   = ["*"],
+              $selectRaw = [],
+              $select    = [],
+              $join      = "",
+              $orderBy   = "",
+              $groupBy   = "",
+              $limit     = "",
+              $alias     = "",
+              $single    = false;
+    
+    /**
+     * select column on database
+     * @param array|string $select 
+     * @return $this 
+     */
+    public function select($select)
+    {
+        if ( is_array($select) ) {
+            $this->select = $select;
+        }
+        else {
+            $this->select = explode(",", $select);
+        }
+        return $this;
+    }
 
     /**
      * add select raw
-     * @param mixed $select 
+     * @param array|string $selectRaw 
      * @return $this 
      */
-    public function selectRaw($select)
+    public function selectRaw($selectRaw)
     {
-        if ( is_array($select) ) {
-            $this->selectRaw = array_merge($select, $this->selectRaw);
+        if ( is_array($selectRaw) ) {
+            $this->selectRaw = $selectRaw;
         }
         else {
-            array_push($this->selectRaw, $select);
+            $this->selectRaw = explode(",", $selectRaw);
         }
-
         return $this;
     }
 
     /**
-     * make query where
-     * @param mixed $query 
-     * @param string $operator 
-     * @param string $separator 
-     * @return $this 
-     */
-    public function where($query, $operator = "=", $separator = "AND")
-    {
-        $where = " WHERE ";
-        if ( is_array($query) ) {
-            $cols = [];
-            foreach ($query as $key => $value) {
-                $cols[] = "$key $operator $value";
-            }
-
-            $where .= implode(" " . $separator . " ", $cols);
-        }
-
-        else {
-            $where .= $query;
-        }
-
-        $this->where = $where;
-        return $this;
-    }
-
-    /**
-     * make order by query
-     * @param mixed $column 
+     * make query order by
+     * @param array|string $column 
      * @param string $type 
      * @return $this 
      */
-    public function orderBy($column, $type = "ASC")
+    public function orderBy($column, $type = null)
     {
-        $this->orderBy = " ORDER BY $column $type";
+        $orderBy = " ORDER BY ";
+        if ( is_array($column) ) {
+            $orderBy .= implode(", ", $column);
+        }
+        else {
+            $orderBy .= $column;
+        }
+
+        $this->orderBy = $orderBy . " " . $type;
+
         return $this;
     }
     
     /**
      * make query group by
-     * @param mixed $column 
+     * @param array|string $column 
      * @return $this 
      */
     public function groupBy($column)
     {
-        $groupBy = " GROUP BY ";
+        $groupBy = " ORDER BY ";
         if ( is_array($column) ) {
             $groupBy .= implode(", ", $column);
         }
-        
         else {
             $groupBy .= $column;
         }
 
         $this->groupBy = $groupBy;
+
         return $this;
     }
 
     /**
-     * make query limit
-     * @param mixed $limit 
-     * @param mixed|null $offset 
+     * 
+     * @param int $limit 
+     * @param int|null $offset 
      * @return $this 
      */
     public function limit($limit, $offset = null)
     {
-        $limit = " LIMIT $limit";
+        $this->limit = " LIMIT $limit " . (isset($offset) ? "OFFSET $offset" : "");
 
-        if ( isset($offset) ) {
-            $limit .= " OFFSET $offset";
-        }
-
-        $this->limit = $limit;
         return $this;
     }
 
     /**
-     * getting data
-     * @return mixed 
+     * set alias current table name
+     * @param string $alias 
+     * @return $this 
      */
-    public function get()
+    public function alias($alias)
     {
-        if ( $this->join ) {
-            $this->select = array_merge($this->getCurrentColumns(), $this->relationSelect);
-        }
-
-        $query = "
-            SELECT 
-                " . implode(", ", array_merge($this->select, $this->selectRaw)) . "
-            FROM $this->table
-            $this->join
-            $this->where
-            $this->orderBy
-            $this->groupBy
-            $this->limit
-        ";
-
-        $prepare = $this->db->query($query);
-        $res = $prepare->result_array();
-
-        return $this->response($res);
+        $this->alias = $alias;
+        return $this;
     }
 
     /**
-     * return first single value
+     * unhide culumn
+     * @return $this 
+     */
+    public function unhide()
+    {
+        $this->hidden = [];
+        return $this;
+    }
+
+    /**
+     * return to single result
      * @return $this 
      */
     public function single()
@@ -155,19 +141,47 @@ trait SelectQueryBuilder
         return $this;
     }
 
-
-    protected function response($results)
+    /**
+     * getting query
+     * @return array 
+     */
+    public function get()
     {
-        // convert to object
+        // set column if have join
+        if ( $this->join ) {
+            $this->columns = array_merge($this->getCurrentColumns(), $this->joinColumns);
+        }
+
+        // make select column
+        $this->columns = array_merge((count($this->select) > 0 ? $this->select : $this->columns), $this->selectRaw);
+        $query = "
+            SELECT
+                " . implode(", ", $this->columns) . "
+            FROM $this->table" . ($this->alias ? " AS " . $this->alias : "") . "
+            " . str_replace("#current_table#", ($this->alias ? $this->alias : $this->table), $this->join) . "
+            $this->where
+            $this->orderBy
+            $this->groupBy
+            $this->limit
+        ";
+
+        $prepare = $this->db->query($query);
+        return $this->response($prepare->result_array());
+    }
+
+
+    /**
+     * response result
+     * @param array $results 
+     * @return mixed 
+     */
+    protected function response($results = [])
+    {
         $results = array_map(function($val) {
             return (object) $val;
         }, $results);
 
-        if ( $this->single ) {
-            $results = $results[0];
-        }
-        
-        return $results;
+        return $this->single ? $results[0] : $results;
     }
-    
+
 }
