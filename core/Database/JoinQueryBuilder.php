@@ -42,10 +42,10 @@ trait JoinQueryBuilder
      */
     protected function getJoinColumns($table, $alias, $foreign_key)
     {
-        $driver = $this->db->subdriver ?? $this->db->dbdriver;
+        $driver   = $this->db->subdriver ?? $this->db->dbdriver;
         $database = $this->db->database;
 
-        $query = $this->getQueryColumns($table, $database, $driver);
+        $query   = $this->getQueryColumns($table, $database, $driver);
         $prepare = $this->db->query($query);
         $columns = array_column($prepare->result(), "column_name");
 
@@ -64,14 +64,14 @@ trait JoinQueryBuilder
      */
     protected function getCurrentColumns()
     {
-        $driver = $this->db->subdriver ?? $this->db->dbdriver;
+        $driver   = $this->db->subdriver ?? $this->db->dbdriver;
         $database = $this->db->database;
 
-        $query = $this->getQueryColumns($this->table, $database, $driver);
+        $query   = $this->getQueryColumns($this->table, $database, $driver);
         $prepare = $this->db->query($query);
         $columns = array_column($prepare->result(), "column_name");
 
-        $hidden = $this->hidden;
+        $hidden  = $this->hidden;
         $columns = array_filter($columns, function($key) use ($hidden) {
             return !in_array($key, $hidden);
         }, ARRAY_FILTER_USE_BOTH);
