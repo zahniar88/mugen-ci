@@ -143,6 +143,27 @@ trait SelectQueryBuilder
     }
 
     /**
+     * get count of data
+     * @return mixed 
+     */
+    public function count()
+    {
+        $query = "
+            SELECT
+                COUNT(*) AS count
+            FROM $this->table
+            $this->join
+            $this->where
+            $this->orderBy
+            $this->groupBy
+        ";
+        $prepare = $this->db->query($query);
+        $res = $prepare->row();
+
+        return $res->count;
+    }
+
+    /**
      * getting query
      * @return array 
      */
