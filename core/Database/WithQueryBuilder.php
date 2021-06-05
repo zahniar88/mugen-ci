@@ -12,6 +12,14 @@ trait WithQueryBuilder
      */
     protected $with = [];
     
+    /**
+     * merge data table
+     * @param stirng $table 
+     * @param string $mode 
+     * @param string $primary_key 
+     * @param string|null $foreign_key 
+     * @return $this 
+     */
     public function with($table, $mode = "", $primary_key = "id", $foreign_key = null)
     {
         $foreign_key = isset($foreign_key) ? $foreign_key : $this->table . "_" . $primary_key;
@@ -19,7 +27,7 @@ trait WithQueryBuilder
         // get current data
         $query = "
             SELECT 
-                $primary_key
+                " . ($this->alias ? $this->alias . "." : "") . "$primary_key
             FROM $this->table" . ($this->alias ? " AS " . $this->alias : "") . "
             " . str_replace("#current_table#", ($this->alias ? $this->alias : $this->table), $this->join) . "
             $this->where
