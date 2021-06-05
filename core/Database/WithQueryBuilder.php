@@ -20,7 +20,8 @@ trait WithQueryBuilder
         $query = "
             SELECT 
                 $primary_key
-            FROM $this->table
+            FROM $this->table" . ($this->alias ? " AS " . $this->alias : "") . "
+            " . str_replace("#current_table#", ($this->alias ? $this->alias : $this->table), $this->join) . "
             $this->where
             $this->orderBy
             $this->groupBy
