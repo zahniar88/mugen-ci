@@ -68,3 +68,25 @@ if ( !function_exists("middleware") ) {
     }
 
 }
+
+/**
+ * request from datatables
+ */
+if ( !function_exists("datatables_request") ) {
+
+    function datatables_request() {
+        $__ci =& get_instance();
+
+        // getting information
+        return [
+            "draw"   => $__ci->request->draw,
+            "start"  => $__ci->request->start,
+            "length" => $__ci->request->length,
+            "search" => $__ci->request->search["value"],
+            "order"  => $__ci->request->order[0]["column"],
+            "dir"    => $__ci->request->order[0]["dir"],
+            "column" => $__ci->request->columns[$__ci->request->order[0]["column"]]["name"],
+        ];
+    }
+
+}
