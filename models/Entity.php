@@ -3,11 +3,13 @@ defined("BASEPATH") OR die("No direct access allowed");
 
 require_once __DIR__ . "/../core/Database/SelectQueryBuilder.php";
 require_once __DIR__ . "/../core/Database/InsertQueryBuilder.php";
+require_once __DIR__ . "/../core/Database/UpdateQueryBuilder.php";
 
 class Entity extends CI_Model {    
 
     use SelectQueryBuilder,
-        InsertQueryBuilder;
+        InsertQueryBuilder,
+        UpdateQueryBuilder;
 
     /**
      * define default table name

@@ -4,17 +4,17 @@ defined("BASEPATH") OR die("No direct access allowed");
 /**
  * 
  */
-trait InsertQueryBuilder
+trait UpdateQueryBuilder
 {
     
     /**
-     * creating data to database
+     * make update query
      * @param array $params 
      * @return array|false 
      */
-    public function create($params = [])
+    public function update($params = [])
     {
-        // filter value
+        // filtering params
         $fillable = $this->fillable;
         $params = array_filter($params, function($val, $key) use ($fillable) {
             return in_array($key, $fillable);
@@ -25,19 +25,22 @@ trait InsertQueryBuilder
             return "'$val'";
         }, $params);
 
-        // if have timestamps
+        // timestamps
         if ( $this->timestamps ) {
-            $data["created_at"] = "'" . $this->current_time() . "'";
+            $data["updated_at"] = $this->current_time();
         }
 
-        // make query
-        $query = "
-            INSERT INTO $this->table
-                (" . implode(", ", array_keys($data)) . ")
-            VALUES
-                (" . implode(", ", array_values($data)) . ")
-        ";
+        // set up set columns
+        $sets = [];
+        foreach ($data as $key => $value) {
+            $sets[] = "$key = $value";
+        }
 
+        $query = "
+            UPDATE $this->table
+            SET " . implode(", \n", $sets) . "
+            $this->where
+        ";
         $prepare = $this->db->query($query);
 
         return $prepare ? $params : false;
