@@ -59,9 +59,9 @@ class Entity extends CI_Model {
         if ( is_array($where) ) {
             $expr = [];
             foreach ($where as $key => $value) {
-                $expr[] = "$key $operator $value";
+                $expr[] = "$key $operator '$value'";
             }
-            $query .= implode($separator, $expr);
+            $query .= implode(" " . $separator . " ", $expr);
         }
         else {
             $query .= $where;
